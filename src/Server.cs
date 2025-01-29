@@ -2,6 +2,7 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using codecrafters_dns_server;
 
 // You can use print statements as follows for debugging, they'll be visible when running tests.
 Console.WriteLine("Logs from your program will appear here!");
@@ -21,11 +22,13 @@ while (true)
     IPEndPoint sourceEndPoint = new IPEndPoint(IPAddress.Any, 0);
     byte[] receivedData = udpClient.Receive(ref sourceEndPoint);
     string receivedString = Encoding.ASCII.GetString(receivedData);
+    DnsMessage dnsMessage = new(receivedData);
 
     Console.WriteLine($"Received {receivedData.Length} bytes from {sourceEndPoint}: {receivedString}");
 
     // Create an empty response
-    byte[] response = Encoding.ASCII.GetBytes("");
+    //byte[] response = Encoding.ASCII.GetBytes("");
+    byte[] response = dnsMessage.GetResponse();
 
     // Send response
     udpClient.Send(response, response.Length, sourceEndPoint);
