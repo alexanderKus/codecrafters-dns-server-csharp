@@ -15,7 +15,6 @@ public class DnsMessage
     public void AddDnsQuestion(DnsQuestion question)
     {
         Question.Add(question);
-        Header.QuestionCount++;
     }
     public byte[] GetResponse()
     {
@@ -24,6 +23,6 @@ public class DnsMessage
         offset = Question.Aggregate(offset, (current, question) 
             => current + question.Write(memory[current..].Span));
         // NOTE: Is this copy need?
-        return memory[..(12 + 0)].ToArray();
+        return memory[..(12 + offset)].ToArray();
     }
 }
