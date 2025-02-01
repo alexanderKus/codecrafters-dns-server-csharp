@@ -11,8 +11,8 @@ public class DnsQuestion(DnsDomain name, ushort type, ushort cls)
     public int Write(Span<byte> buffer)
     {
         var nameLength = Name.Write(buffer);
-        BinaryPrimitives.WriteUInt16BigEndian(buffer[(nameLength + 1)..], Type);
-        BinaryPrimitives.WriteUInt16BigEndian(buffer[(nameLength + 3)..], Class);
+        BinaryPrimitives.WriteUInt16BigEndian(buffer[nameLength..], Type);
+        BinaryPrimitives.WriteUInt16BigEndian(buffer[(nameLength+2)..], Class);
         return nameLength + 4;
     }
 }

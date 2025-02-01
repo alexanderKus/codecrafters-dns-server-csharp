@@ -13,9 +13,8 @@ public class DnsDomain(string domain)
         {
             totalLength += WriteLabel(label, buffer[totalLength..]);
         }
-        totalLength++;
         buffer[totalLength] = 0;
-        return totalLength;
+        return totalLength + 1;
     }
 
     private int WriteLabel(string label, Span<byte> buffer)
