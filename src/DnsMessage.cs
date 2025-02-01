@@ -9,12 +9,14 @@ public class DnsMessage
     public DnsMessage(byte[] data)
     {
         Header = new DnsHeader(data[..12]);
+        Header.QuestionCount = 0;
         AddDnsQuestion(new DnsQuestion(
             name: new DnsDomain("codecrafters.io"), type: 1, cls: 1));
     }
     public void AddDnsQuestion(DnsQuestion question)
     {
         Question.Add(question);
+        Header.QuestionCount++;
     }
     public byte[] GetResponse()
     {
