@@ -6,12 +6,11 @@ public class DnsHeader(byte[] data)
 {
     public ushort Id { get; } = (ushort)((data[0] << 8) | data[1]);
     public bool IsResponse { get; private set; } = (data[2] & 0x80) != 0;
-    public ushort OpCode { get; } = (ushort)((data[2] >> 3) & 0xF0);
+    public ushort OpCode { get; } = (ushort)((data[2] >> 3) & 0xF);
     public bool IsAuthoritative { get; } = (data[2] & 0x4) != 0;
     public bool IsTruncated { get; } = (data[2] & 0x2) != 0;
     public bool IsRecursionDesired { get; } = (data[2] & 0x1) != 0;
     public bool IsRecursionAvailable { get; } = (data[3] & 0xF) != 0;
-    // NOTE: are those need to be int ???
     public ushort ResponseCode { get; } = (ushort)(data[3] & 0xF);
     public ushort QuestionCount { get; set; } = (ushort)((data[4] << 8) | data[5]);
     public ushort AnswerCount { get; set; } = (ushort)((data[6] << 8) | data[7]);
