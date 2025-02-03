@@ -10,10 +10,11 @@ public class DnsMessage
     public DnsMessage(byte[] data)
     {
         Header = new DnsHeader(data[..12]);
-        AddDnsQuestion(new DnsQuestion(
-            name: new DnsDomain("codecrafters.io"), type: 1, cls: 1));
+        var (len, question) = DnsParser.ParserDnsQuestion(data.AsSpan()[12..]);
+        //var (len2, resourceRecord) = DnsParser.ParserDnsResourceRecords(data.AsSpan()[(12+len)..]);
+        AddDnsQuestion(question);
         AddDnsResourceRecord(new DnsResourceRecords(
-            name: new DnsDomain("codecrafters.io"), type: 1, cls: 1, ttl: 60, length:4, data: new Memory<byte>([8,8,8,8])));
+            name: question.Name, question.Type, cls: question.Class, ttl: 60, length:4, data: new Memory<byte>([8,8,8,8])));
     }
     public void AddDnsQuestion(DnsQuestion question)
     {
@@ -34,6 +35,6 @@ public class DnsMessage
         offset = Answer.Aggregate(offset, (current, answer) 
             => current + answer.Write(memory[current..].Span));
         // NOTE: Is this copy need?
-        return memory[..(12 + offset)].ToArray();
+        return memory[..(offset)].ToArray();
     }
 }

@@ -2,9 +2,9 @@ using System.Text;
 
 namespace codecrafters_dns_server;
 
-public class DnsDomain(string domain)
+public class DnsDomain(string[] labels)
 {
-    public string[] Labels { get; } = domain.Split('.');
+    public string[] Labels { get; } = labels;
     
     public int Write(Span<byte> buffer)
     {
