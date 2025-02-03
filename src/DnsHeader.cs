@@ -4,7 +4,7 @@ namespace codecrafters_dns_server;
 
 public class DnsHeader(byte[] data)
 {
-    public ushort Id { get; } = 1234; //(ushort)((data[0] << 8) | data[1]);
+    public ushort Id { get; } = (ushort)((data[0] << 8) | data[1]);
     public bool IsResponse { get; private set; } = (data[2] & 0x80) != 0;
     public ushort OpCode { get; } = (ushort)((data[2] >> 3) & 0xF0);
     public bool IsAuthoritative { get; } = (data[2] & 0x4) != 0;
