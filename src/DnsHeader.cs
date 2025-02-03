@@ -20,7 +20,7 @@ public class DnsHeader(byte[] data)
     public int Write(Span<byte> buffer)
     {
         IsResponse = true;
-        ResponseCode = OpCode == 0 ? (ushort)0 : (ushort)1;
+        ResponseCode = OpCode == 0 ? (ushort)0 : (ushort)4;
         BinaryPrimitives.WriteUInt16BigEndian(buffer, Id);
         ushort temp = (ushort)(((IsResponse ? 1 : 0) << 7 | (OpCode & 0xF) << 3 |
                                (IsAuthoritative ? 1 : 0) << 2 |
