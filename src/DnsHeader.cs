@@ -11,7 +11,7 @@ public class DnsHeader(byte[] data)
     public bool IsTruncated { get; } = (data[2] & 0x2) != 0;
     public bool IsRecursionDesired { get; } = (data[2] & 0x1) != 0;
     public bool IsRecursionAvailable { get; } = (data[3] & 0xF) != 0;
-    public ushort ResponseCode { get; } = (ushort)(data[3] & 0xF);
+    public ushort ResponseCode { get; private set; } = (ushort)(data[3] & 0xF);
     public ushort QuestionCount { get; set; } = (ushort)((data[4] << 8) | data[5]);
     public ushort AnswerCount { get; set; } = (ushort)((data[6] << 8) | data[7]);
     public ushort NameServerCount { get; set; } = (ushort)((data[8] << 8) | data[9]);
@@ -20,9 +20,9 @@ public class DnsHeader(byte[] data)
     public int Write(Span<byte> buffer)
     {
         IsResponse = true;
+        ResponseCode = OpCode == 0 ? (ushort)0 : (ushort)1;
         BinaryPrimitives.WriteUInt16BigEndian(buffer, Id);
-        ushort responseOpCOde = OpCode == 0 ? (ushort)0 : (ushort)1;
-        ushort temp = (ushort)(((IsResponse ? 1 : 0) << 7 | (responseOpCOde & 0xF) << 3 |
+        ushort temp = (ushort)(((IsResponse ? 1 : 0) << 7 | (OpCode & 0xF) << 3 |
                                (IsAuthoritative ? 1 : 0) << 2 |
                                (IsTruncated ? 1 : 0) << 1 | (IsRecursionDesired ? 1 : 0)) << 8);
         ushort temp2 = (ushort)((IsRecursionAvailable ? 1 : 0) << 7 | (ResponseCode & 0xF));
