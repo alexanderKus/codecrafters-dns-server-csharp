@@ -23,6 +23,7 @@ public class DnsMessage
     public void AddDnsResourceRecord(DnsResourceRecords resourceRecords)
     {
         Answer.Add(resourceRecords);
+        Header.AnswerCount += 1;
     }
     public byte[] GetResponse()
     {
