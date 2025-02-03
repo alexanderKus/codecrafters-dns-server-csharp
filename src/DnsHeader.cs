@@ -21,7 +21,8 @@ public class DnsHeader(byte[] data)
     {
         IsResponse = true;
         BinaryPrimitives.WriteUInt16BigEndian(buffer, Id);
-        ushort temp = (ushort)(((IsResponse ? 1 : 0) << 7 | (OpCode & 0xF) << 3 |
+        ushort responseOpCOde = OpCode == 0 ? (ushort)0 : (ushort)1;
+        ushort temp = (ushort)(((IsResponse ? 1 : 0) << 7 | (responseOpCOde & 0xF) << 3 |
                                (IsAuthoritative ? 1 : 0) << 2 |
                                (IsTruncated ? 1 : 0) << 1 | (IsRecursionDesired ? 1 : 0)) << 8);
         ushort temp2 = (ushort)((IsRecursionAvailable ? 1 : 0) << 7 | (ResponseCode & 0xF));
