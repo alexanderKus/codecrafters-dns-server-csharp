@@ -19,6 +19,6 @@ public class DnsResourceRecords(DnsDomain name, ushort type, ushort cls, uint tt
         BinaryPrimitives.WriteUInt32BigEndian(buffer[(nameLength+4)..], Ttl);
         BinaryPrimitives.WriteUInt16BigEndian(buffer[(nameLength+8)..], Length);
         Data.Span.CopyTo(buffer[(nameLength+10)..]);
-        return nameLength + 10 + buffer.Length;
+        return nameLength + 10 + Data.Length;
     }
 }

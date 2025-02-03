@@ -30,8 +30,8 @@ public class DnsMessage
         var offset = Header.Write(memory[..12].Span);
         offset = Question.Aggregate(offset, (current, question) 
             => current + question.Write(memory[current..].Span));
-        offset = Answer.Aggregate(offset, (current, question) 
-            => current + question.Write(memory[current..].Span));
+        offset = Answer.Aggregate(offset, (current, answer) 
+            => current + answer.Write(memory[current..].Span));
         // NOTE: Is this copy need?
         return memory[..(12 + offset)].ToArray();
     }
