@@ -18,7 +18,6 @@ while (true)
     IPEndPoint sourceEndPoint = new IPEndPoint(IPAddress.Any, 0);
     byte[] receivedData = udpClient.Receive(ref sourceEndPoint);
     string receivedString = Encoding.ASCII.GetString(receivedData);
-    /*
     byte[] test =
     [
         0x12, 0x34, // Transaction ID
@@ -41,8 +40,7 @@ while (true)
         0x00, 0x01, // Type A
         0x00, 0x01, // Class IN
     ];
-    */
-    DnsMessage dnsMessage = new(receivedData);
+    DnsMessage dnsMessage = new(test);
     Console.WriteLine($"Received {receivedData.Length} bytes from {sourceEndPoint}: {receivedString}");
     byte[] response = dnsMessage.GetResponse();
     udpClient.Send(response, response.Length, sourceEndPoint);
