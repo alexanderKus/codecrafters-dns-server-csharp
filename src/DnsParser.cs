@@ -13,7 +13,7 @@ internal static class DnsParser
         var type = BinaryPrimitives.ReadUInt16BigEndian(data[(len+1)..(len+3)]);
         var cls = BinaryPrimitives.ReadUInt16BigEndian(data[(len+3)..(len+5)]);
         var question = new DnsQuestion(domain, type, cls);
-        return (len+4, question);
+        return (len+5, question);
     }
 
     private static (int length, DnsDomain domain) ParseDnsDomain(Span<byte> data, Span<byte> buffer)
@@ -26,11 +26,10 @@ internal static class DnsParser
             var len = data[offset];
             if (IsQuestionCompressed(len))
             {
-                Console.WriteLine("Got compresed");
                 var offsetPtr = BinaryPrimitives.ReadUInt16BigEndian(data) & 0x3fff;
                 var (_, domain) = ParseDnsDomain(buffer[offsetPtr..], buffer);
-                // NOTE: length of 2 is actually the size of Question. 
-                return (2, domain);
+                // NOTE: actually the length of Question is 2, but we later adds 1, so 1 needs to be subtracted. 
+                return (1, domain);
             }
             if (len == 0) break;
             var label = Encoding.ASCII.GetString(data[(offset+1)..(offset+1+len)]);
