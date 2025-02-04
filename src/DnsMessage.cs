@@ -1,20 +1,23 @@
 namespace codecrafters_dns_server;
 
-// NOTE: can this be struct ???
 public class DnsMessage
 {
-    public DnsHeader Header { get; } = null!;
+    public DnsHeader Header { get; }
     public List<DnsQuestion> Question { get; private set; } = [];
     public List<DnsResourceRecords> Answer { get; private set; } = [];
 
     public DnsMessage(byte[] data)
     {
         Header = new DnsHeader(data[..12]);
-        var (len, question) = DnsParser.ParserDnsQuestion(data.AsSpan()[12..]);
-        //var (len2, resourceRecord) = DnsParser.ParserDnsResourceRecords(data.AsSpan()[(12+len)..]);
-        AddDnsQuestion(question);
-        AddDnsResourceRecord(new DnsResourceRecords(
-            name: question.Name, question.Type, cls: question.Class, ttl: 60, length:4, data: new Memory<byte>([8,8,8,8])));
+        var offset = 12;
+        for (var i = 0; i < Header.QuestionCount; i++)
+        {
+            var (len, question) = DnsParser.ParserDnsQuestion(data.AsSpan()[offset..], data);
+            offset += len;
+            AddDnsQuestion(question);
+            AddDnsResourceRecord(new DnsResourceRecords(
+                name: question.Name, question.Type, cls: question.Class, ttl: 60, length:4, data: new Memory<byte>([8,8,8,8])));
+        }
     }
     public void AddDnsQuestion(DnsQuestion question)
     {
@@ -35,6 +38,6 @@ public class DnsMessage
         offset = Answer.Aggregate(offset, (current, answer) 
             => current + answer.Write(memory[current..].Span));
         // NOTE: Is this copy need?
-        return memory[..(offset)].ToArray();
+        return memory[..offset].ToArray();
     }
 }
