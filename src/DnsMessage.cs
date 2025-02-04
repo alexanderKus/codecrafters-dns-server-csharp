@@ -31,7 +31,7 @@ public class DnsMessage
     }
     public byte[] GetResponse()
     {
-        var memory = new Memory<byte>(new byte[1024]);
+        var memory = new Memory<byte>(new byte[4096]);
         var offset = Header.Write(memory[..12].Span);
         offset = Question.Aggregate(offset, (current, question) 
             => current + question.Write(memory[current..].Span));
