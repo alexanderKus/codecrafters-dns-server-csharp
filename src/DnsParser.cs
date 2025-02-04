@@ -26,6 +26,7 @@ internal static class DnsParser
             var len = data[offset];
             if (IsQuestionCompressed(len))
             {
+                Console.WriteLine("Got compresed");
                 var offsetPtr = BinaryPrimitives.ReadUInt16BigEndian(data) & 0x3fff;
                 var (_, domain) = ParseDnsDomain(buffer[offsetPtr..], buffer);
                 // NOTE: length of 2 is actually the size of Question. 
