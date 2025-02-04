@@ -13,7 +13,7 @@ public class DnsMessage
         for (var i = 0; i < Header.QuestionCount; i++)
         {
             var (len, question) = DnsParser.ParserDnsQuestion(data.AsSpan()[offset..], data);
-            offset += len+1;
+            offset += len;
             AddDnsQuestion(question);
             AddDnsResourceRecord(new DnsResourceRecords(
                 name: question.Name, question.Type, cls: question.Class, ttl: 60, length:4, data: new Memory<byte>([8,8,8,8])));
