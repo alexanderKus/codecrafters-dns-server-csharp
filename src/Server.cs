@@ -41,7 +41,6 @@ while (true)
         0x00, 0x01, // Type A
         0x00, 0x01, // Class IN
     ];
-    */
     byte[] test =
     [
         0x12, 0x34, // Transaction ID (example)
@@ -65,8 +64,9 @@ while (true)
         0x00, 0x01, // Type A (IPv4 address)
         0x00, 0x01, // Class IN
     ];
+    */
     Console.WriteLine($"Received {receivedData.Length} bytes from {sourceEndPoint}: [{receivedString}]");
-    DnsMessage dnsMessage = new(test);
+    DnsMessage dnsMessage = new(receivedData);
     byte[] response = dnsMessage.GetResponse();
     udpClient.Send(response, response.Length, sourceEndPoint);
 }
