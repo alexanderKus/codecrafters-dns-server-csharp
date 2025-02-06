@@ -10,35 +10,40 @@ internal static class DnsParser
     public static (int len, DnsQuestion question) ParserDnsQuestion(Span<byte> data, Span<byte> buffer)
     {
         var (len, domain) = ParseDnsDomain(data, buffer);
-        var type = BinaryPrimitives.ReadUInt16BigEndian(data[(len+1)..(len+3)]);
-        var cls = BinaryPrimitives.ReadUInt16BigEndian(data[(len+3)..(len+5)]);
+        var type = BinaryPrimitives.ReadUInt16BigEndian(data[len..(len+2)]);
+        var cls = BinaryPrimitives.ReadUInt16BigEndian(data[(len+2)..(len+4)]);
         var question = new DnsQuestion(domain, type, cls);
-        return (len+5, question);
+        return (len+4, question);
     }
 
     private static (int length, DnsDomain domain) ParseDnsDomain(Span<byte> data, Span<byte> buffer)
     {
-        var offset = 0;
         var labels = new string[10];
-        var index = 0;
+        var labelsIndex = 0;
+        var lenIndex = 0;
+        var sectionLength = 0;
         while (true)
         {
-            var len = data[offset];
+            var len = data[lenIndex];
+            var labelIndex = lenIndex + 1;
             if (IsQuestionCompressed(len))
             {
                 var offsetPtr = BinaryPrimitives.ReadUInt16BigEndian(data) & 0x3fff;
-                Console.WriteLine($"Got offsetPtr: {offsetPtr}");
                 var (_, domain) = ParseDnsDomain(buffer[offsetPtr..], buffer);
-                // NOTE: actually the length of Question is 2, but we later adds 1, so 1 needs to be subtracted. 
-                return (1, domain);
+                return (2, domain);
             }
-            if (len == 0) break;
-            var label = Encoding.ASCII.GetString(data[(offset+1)..(offset+1+len)]);
-            labels[index++] = label;
-            offset += len+1;
+            if (len == 0)
+            {
+                sectionLength += 1;
+                break;
+            }
+            var label = Encoding.ASCII.GetString(data[labelIndex..(labelIndex+len)]);
+            labels[labelsIndex++] = label;
+            lenIndex += len + 1;
+            sectionLength = lenIndex;
         }
 
-        return (offset, new DnsDomain(labels.Where(x=> !string.IsNullOrEmpty(x)).ToArray()));
+        return (sectionLength, new DnsDomain(labels.Where(x=> !string.IsNullOrEmpty(x)).ToArray()));
     }
 
     private static bool IsQuestionCompressed(byte value)
