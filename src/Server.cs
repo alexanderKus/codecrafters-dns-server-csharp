@@ -42,7 +42,7 @@ while (true)
         0x00, 0x01, // Class IN
     ];
     */
-    Console.WriteLine($"Received {receivedData.Length} bytes from {sourceEndPoint}: {receivedString}");
+    Console.WriteLine($"Received {receivedData.Length} bytes from {sourceEndPoint}: [{receivedString}]");
     DnsMessage dnsMessage = new(receivedData);
     byte[] response = dnsMessage.GetResponse();
     udpClient.Send(response, response.Length, sourceEndPoint);
