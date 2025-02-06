@@ -59,14 +59,20 @@ while (true)
         0x00, 0x01, // Type A (IPv4 address)
         0x00, 0x01, // Class IN
 
-// Question 2: def (Compressed)
-        0xC0, 0x0C, // Pointer to "abc.longassdomainname.com" (starts at byte 0x0C)
+// Question 2: abc.longassdomainname.com (Uncompressed)
+        0x03, 0x61, 0x62, 0x63, // "abc"
+        0x06, 0x6c, 0x6f, 0x6e, 0x67, 0x61, 0x61,// "longass"
+        0x0a, 0x64, 0x6f, 0x6d, 0x61, 0x69, 0x6e, 0x6e, 0x61, 0x6d, 0x65, // "domainname"
+        0x03, 0x63, 0x6f, 0x6d, // "com"
+        0x00, // End of domain name
         0x00, 0x01, // Type A (IPv4 address)
         0x00, 0x01, // Class IN
     ];
-    */
+            */
+
     Console.WriteLine($"Received {receivedData.Length} bytes from {sourceEndPoint}: [{receivedString}]");
     DnsMessage dnsMessage = new(receivedData);
+    // DnsMessage dnsMessage = new(test);
     byte[] response = dnsMessage.GetResponse();
     udpClient.Send(response, response.Length, sourceEndPoint);
 }

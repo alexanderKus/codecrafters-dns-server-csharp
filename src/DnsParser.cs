@@ -18,32 +18,21 @@ internal static class DnsParser
 
     private static (int length, DnsDomain domain) ParseDnsDomain(Span<byte> data, Span<byte> buffer)
     {
-        var labels = new string[10];
-        var labelsIndex = 0;
-        var lenIndex = 0;
-        var sectionLength = 0;
-        while (true)
-        {
-            var len = data[lenIndex];
-            var labelIndex = lenIndex + 1;
-            if (IsQuestionCompressed(len))
+        List<string> labels = [];
+        var count = 0;
+        while (buffer[0] != 0) {
+            var strLen = data[0];
+            if (IsQuestionCompressed(strLen))
             {
                 var offsetPtr = BinaryPrimitives.ReadUInt16BigEndian(data) & 0x3fff;
                 var (_, domain) = ParseDnsDomain(buffer[offsetPtr..], buffer);
                 return (2, domain);
             }
-            if (len == 0)
-            {
-                sectionLength += 1;
-                break;
-            }
-            var label = Encoding.ASCII.GetString(data[labelIndex..(labelIndex+len)]);
-            labels[labelsIndex++] = label;
-            lenIndex += len + 1;
-            sectionLength = lenIndex;
+            var label = Encoding.ASCII.GetString(data.Slice(1, strLen));
+            labels.Add(label);
+            count += 1 + strLen;
         }
-
-        return (sectionLength, new DnsDomain(labels.Where(x=> !string.IsNullOrEmpty(x)).ToArray()));
+        return (count + 1, new DnsDomain(labels.Where(x=> !string.IsNullOrEmpty(x)).ToArray()));
     }
 
     private static bool IsQuestionCompressed(byte value)
