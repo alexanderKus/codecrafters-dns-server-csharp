@@ -20,8 +20,10 @@ internal static class DnsParser
     {
         List<string> labels = [];
         var count = 0;
-        while (buffer[0] != 0) {
-            var strLen = data[0];
+        var index = 0;
+        while (buffer[index] != 0) 
+        {
+            var strLen = data[index];
             if (IsQuestionCompressed(strLen))
             {
                 var offsetPtr = BinaryPrimitives.ReadUInt16BigEndian(data) & 0x3fff;
@@ -30,9 +32,10 @@ internal static class DnsParser
             }
             var label = Encoding.ASCII.GetString(data.Slice(1, strLen));
             labels.Add(label);
+            index = 1 + strLen;
             count += 1 + strLen;
         }
-        return (count + 1, new DnsDomain(labels.Where(x=> !string.IsNullOrEmpty(x)).ToArray()));
+        return (count + 1, new DnsDomain(labels.ToArray()));
     }
 
     private static bool IsQuestionCompressed(byte value)
