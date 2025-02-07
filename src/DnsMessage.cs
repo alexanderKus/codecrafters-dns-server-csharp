@@ -41,7 +41,7 @@ public class DnsMessage
                 }
                 Console.WriteLine("\n*******************************");
                 _resolverUdpClient.Send(buffer[..length].ToArray(), length, _resolverUdpEndPoint);
-                var resolverResponseEndPoint = new IPEndPoint(IPAddress.Any, 0);
+                var resolverResponseEndPoint = new IPEndPoint(_resolverUdpEndPoint.Address, 0);
                 var resolverResult = _resolverUdpClient.Receive(ref resolverResponseEndPoint).AsSpan();
                 Console.WriteLine("*******************************");
                 Console.WriteLine("Recived to resolver:");
