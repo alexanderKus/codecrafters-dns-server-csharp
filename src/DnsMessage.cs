@@ -17,7 +17,7 @@ public class DnsMessage
         if (resolverUdpEndPoint is not null)
         {
             _resolverUdpEndPoint = resolverUdpEndPoint;
-            _resolverUdpClient = new UdpClient();
+            _resolverUdpClient = new UdpClient(resolverUdpEndPoint);
         }
         Header = new DnsHeader(data[..12]);
         var offset = 12;
@@ -32,8 +32,9 @@ public class DnsMessage
                 var headerCopy = Header.MakeCopy();
                 headerCopy.CopyTo(buffer);
                 var length = question.Write(buffer[12..]);
-                _resolverUdpClient.Send(buffer[..length].ToArray(), length, _resolverUdpEndPoint);
-                var resolverResult = _resolverUdpClient.Receive(ref _resolverUdpEndPoint).AsSpan();
+                IPEndPoint sourceEndPoint = new IPEndPoint(IPAddress.Any, 0);
+                _resolverUdpClient.Send(buffer[..length].ToArray(), length, sourceEndPoint);
+                var resolverResult = _resolverUdpClient.Receive(ref sourceEndPoint).AsSpan();
                 var (questionLength, _) = DnsParser.ParserDnsQuestion(resolverResult[12..], resolverResult);
                 var (_, resolverResourceRecords) = DnsParser.ParserDnsResourceRecord(resolverResult[(questionLength + 12)..], resolverResult);
                 Console.WriteLine(JsonSerializer.Serialize(resolverResourceRecords));

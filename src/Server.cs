@@ -16,6 +16,7 @@ if (args is ["--resolver", _])
     var resolverAddressParts = args[1].Split(':');
     var resolverIpAddress = IPAddress.Parse(resolverAddressParts[0]);
     var resolverPort = int.Parse(resolverAddressParts[1]);
+    Console.WriteLine($"Got resolver. ip: {resolverIpAddress}, port: {resolverPort}");
     resolverUdpEndPoint = new IPEndPoint(resolverIpAddress, resolverPort);
 }
 
