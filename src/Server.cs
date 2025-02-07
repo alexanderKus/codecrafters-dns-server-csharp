@@ -69,13 +69,70 @@ byte[] test =
     0x00, 0x01, // Type A (IPv4 address)
     0x00, 0x01, // Class IN
 ];
-*/
+    byte[] test =
+    [
+        0x15,
+        0x54,
+        0x01,
+        0x00,
+        0x00,
+        0x02,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x03,
+        0x61,
+        0x62,
+        0x63,
+        0x11,
+        0x6C,
+        0x6F,
+        0x6E,
+        0x67,
+        0x61,
+        0x73,
+        0x73,
+        0x64,
+        0x6F,
+        0x6D,
+        0x61,
+        0x69,
+        0x6E,
+        0x6E,
+        0x61,
+        0x6D,
+        0x65,
+        0x03,
+        0x63,
+        0x6F,
+        0x6D,
+        0x00,
+        0x00,
+        0x01,
+        0x00,
+        0x01,
+        0x03,
+        0x64,
+        0x65,
+        0x66,
+        0xC0,
+        0x10,
+        0x00,
+        0x01,
+        0x00,
+        0x01
+    ];
+    */
+
     Console.WriteLine("*******************************");
     foreach (byte b in receivedData)
     {
-        Console.WriteLine($"Byte: {b:X2}");
+        Console.Write($"Byte: {b:X2}");
     }
-    Console.WriteLine("*******************************");
+    Console.WriteLine("\n*******************************");
     Console.WriteLine($"Received {receivedData.Length} bytes from {sourceEndPoint}: [{receivedString}]");
     DnsMessage dnsMessage = new(receivedData);
     // DnsMessage dnsMessage = new(test);

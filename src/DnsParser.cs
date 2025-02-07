@@ -25,7 +25,7 @@ internal static class DnsParser
             var strLen = data[index];
             if (IsQuestionCompressed(strLen))
             {
-                var offsetPtr = BinaryPrimitives.ReadUInt16BigEndian(data) & 0x3fff;
+                var offsetPtr = BinaryPrimitives.ReadUInt16BigEndian(data[index..]) & 0x3fff;
                 var (_, domain) = ParseDnsDomain(buffer[offsetPtr..], buffer);
                 return (2, domain);
             }
