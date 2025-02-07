@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Sockets;
+using System.Text.Json;
 
 namespace codecrafters_dns_server;
 
@@ -35,6 +36,7 @@ public class DnsMessage
                 var resolverResult = _resolverUdpClient.Receive(ref _resolverUdpEndPoint).AsSpan();
                 var (questionLength, _) = DnsParser.ParserDnsQuestion(resolverResult[12..], resolverResult);
                 var (_, resolverResourceRecords) = DnsParser.ParserDnsResourceRecord(resolverResult[(questionLength + 12)..], resolverResult);
+                Console.WriteLine(JsonSerializer.Serialize(resolverResourceRecords));
                 AddDnsResourceRecord(resolverResourceRecords);
             }
             else
