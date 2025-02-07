@@ -15,6 +15,18 @@ internal static class DnsParser
         var question = new DnsQuestion(domain, type, cls);
         return (len+4, question);
     }
+    
+    public static (int len, DnsResourceRecords question) ParserDnsResourceRecord(Span<byte> data, Span<byte> buffer)
+    {
+        var (len, domain) = ParseDnsDomain(data, buffer);
+        var type = BinaryPrimitives.ReadUInt16BigEndian(data[len..(len+2)]);
+        var cls = BinaryPrimitives.ReadUInt16BigEndian(data[(len+2)..(len+4)]);
+        var ttl = BinaryPrimitives.ReadUInt32BigEndian(data[(len + 4)..(len + 8)]);
+        var length = BinaryPrimitives.ReadUInt16BigEndian(data[(len+8)..(len+10)]);
+        var d = data[(len + 10)..].ToArray();
+        var question = new DnsResourceRecords(domain, type, cls, ttl, length, d);
+        return (len+10+length, question);
+    }
 
     private static (int length, DnsDomain domain) ParseDnsDomain(Span<byte> data, Span<byte> buffer)
     {

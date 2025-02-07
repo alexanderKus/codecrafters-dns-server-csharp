@@ -1,3 +1,6 @@
+using System.Net;
+using System.Net.Sockets;
+
 namespace codecrafters_dns_server;
 
 public class DnsMessage
@@ -5,9 +8,16 @@ public class DnsMessage
     public DnsHeader Header { get; }
     public List<DnsQuestion> Question { get; private set; } = [];
     public List<DnsResourceRecords> Answer { get; private set; } = [];
+    private readonly IPEndPoint? _resolverUdpEndPoint = null!;
+    private readonly UdpClient? _resolverUdpClient = null!;
 
-    public DnsMessage(byte[] data)
+    public DnsMessage(byte[] data, IPEndPoint? resolverUdpEndPoint)
     {
+        if (resolverUdpEndPoint is not null)
+        {
+            _resolverUdpEndPoint = resolverUdpEndPoint;
+            _resolverUdpClient = new UdpClient();
+        }
         Header = new DnsHeader(data[..12]);
         var offset = 12;
         for (var i = 0; i < Header.QuestionCount; i++)
@@ -15,8 +25,23 @@ public class DnsMessage
             var (len, question) = DnsParser.ParserDnsQuestion(data.AsSpan()[offset..], data);
             offset += len;
             AddDnsQuestion(question);
-            AddDnsResourceRecord(new DnsResourceRecords(
-                name: question.Name, question.Type, cls: question.Class, ttl: 60, length:4, data: new Memory<byte>([8,8,8,8])));
+            if (_resolverUdpEndPoint is not null)
+            {
+                Span<byte> buffer = new byte[1024];
+                var headerCopy = Header.MakeCopy();
+                headerCopy.CopyTo(buffer);
+                var length = question.Write(buffer[12..]);
+                _resolverUdpClient.Send(buffer[..length].ToArray(), buffer.Length, _resolverUdpEndPoint);
+                var resolverResult = _resolverUdpClient.Receive(ref _resolverUdpEndPoint).AsSpan();
+                var (questionLength, _) = DnsParser.ParserDnsQuestion(resolverResult[12..], resolverResult);
+                var (_, resolverResourceRecords) = DnsParser.ParserDnsResourceRecord(resolverResult[(questionLength + 12)..], resolverResult);
+                AddDnsResourceRecord(resolverResourceRecords);
+            }
+            else
+            {
+                AddDnsResourceRecord(new DnsResourceRecords(
+                    name: question.Name, question.Type, cls: question.Class, ttl: 60, length:4, data: new Memory<byte>([8,8,8,8])));
+            }
         }
     }
     public void AddDnsQuestion(DnsQuestion question)

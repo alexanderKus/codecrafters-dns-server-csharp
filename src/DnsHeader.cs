@@ -33,4 +33,11 @@ public class DnsHeader(byte[] data)
         BinaryPrimitives.WriteUInt16BigEndian(buffer[10..], AdditionalCount);
         return 12;
     }
+
+    public ReadOnlySpan<byte> MakeCopy()
+    {
+        Span<byte> buffer = new byte[12];
+        Write(buffer);
+        return buffer;
+    }
 }
