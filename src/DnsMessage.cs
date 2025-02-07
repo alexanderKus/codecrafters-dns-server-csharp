@@ -31,7 +31,7 @@ public class DnsMessage
                 var headerCopy = Header.MakeCopy();
                 headerCopy.CopyTo(buffer);
                 var length = question.Write(buffer[12..]);
-                _resolverUdpClient.Send(buffer[..length].ToArray(), buffer.Length, _resolverUdpEndPoint);
+                _resolverUdpClient.Send(buffer[..length].ToArray(), length, _resolverUdpEndPoint);
                 var resolverResult = _resolverUdpClient.Receive(ref _resolverUdpEndPoint).AsSpan();
                 var (questionLength, _) = DnsParser.ParserDnsQuestion(resolverResult[12..], resolverResult);
                 var (_, resolverResourceRecords) = DnsParser.ParserDnsResourceRecord(resolverResult[(questionLength + 12)..], resolverResult);
