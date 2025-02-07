@@ -26,15 +26,29 @@ public class DnsMessage
             var (len, question) = DnsParser.ParserDnsQuestion(data.AsSpan()[offset..], data);
             offset += len;
             AddDnsQuestion(question);
-            if (_resolverUdpEndPoint is not null)
+            if (_resolverUdpEndPoint is not null )
             {
                 Span<byte> buffer = new byte[1024];
                 var headerCopy = Header.MakeCopy();
                 headerCopy.CopyTo(buffer);
                 var length = question.Write(buffer[12..]);
+                Console.WriteLine("*******************************");
+                Console.WriteLine("Sent to resolver:");
+                foreach (byte b in buffer[..length])
+                {
+                    Console.Write($"{b:X2},");
+                }
+                Console.WriteLine("\n*******************************");
                 _resolverUdpClient.Send(buffer[..length].ToArray(), length, _resolverUdpEndPoint);
                 var resolverResponseEndPoint = new IPEndPoint(IPAddress.Any, 0);
                 var resolverResult = _resolverUdpClient.Receive(ref resolverResponseEndPoint).AsSpan();
+                Console.WriteLine("*******************************");
+                Console.WriteLine("Recived to resolver:");
+                foreach (byte b in resolverResult)
+                {
+                    Console.Write($"{b:X2},");
+                }
+                Console.WriteLine("\n*******************************");
                 var (questionLength, _) = DnsParser.ParserDnsQuestion(resolverResult[12..], resolverResult);
                 var (_, resolverResourceRecords) = DnsParser.ParserDnsResourceRecord(resolverResult[(questionLength + 12)..], resolverResult);
                 Console.WriteLine(JsonSerializer.Serialize(resolverResourceRecords));
