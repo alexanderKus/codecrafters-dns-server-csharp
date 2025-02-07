@@ -70,7 +70,12 @@ byte[] test =
     0x00, 0x01, // Class IN
 ];
 */
-
+    Console.WriteLine("*******************************");
+    foreach (byte b in receivedData)
+    {
+        Console.WriteLine($"Byte: {b:X2}");
+    }
+    Console.WriteLine("*******************************");
     Console.WriteLine($"Received {receivedData.Length} bytes from {sourceEndPoint}: [{receivedString}]");
     DnsMessage dnsMessage = new(receivedData);
     // DnsMessage dnsMessage = new(test);
