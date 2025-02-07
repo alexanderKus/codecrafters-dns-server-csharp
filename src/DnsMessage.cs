@@ -32,6 +32,7 @@ public class DnsMessage
                 var headerCopy = Header.MakeCopy();
                 headerCopy.CopyTo(buffer);
                 var length = question.Write(buffer[12..]);
+                length += 12;
                 Console.WriteLine("*******************************");
                 Console.WriteLine("Sent to resolver:");
                 foreach (byte b in buffer[..length])
