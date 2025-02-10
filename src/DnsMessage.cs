@@ -26,7 +26,7 @@ public class DnsMessage
             var (len, question) = DnsParser.ParserDnsQuestion(data.AsSpan()[offset..], data);
             offset += len;
             AddDnsQuestion(question);
-            if (_resolverUdpEndPoint is not null && Header.QuestionCount > 1)
+            if (_resolverUdpEndPoint is not null)
             {
                 Span<byte> buffer = new byte[1024];
                 var headerCopy = Header.MakeCopy();
