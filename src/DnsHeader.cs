@@ -37,7 +37,16 @@ public class DnsHeader(byte[] data)
     public ReadOnlySpan<byte> MakeCopy()
     {
         Span<byte> buffer = new byte[12];
-        Write(buffer);
+        BinaryPrimitives.WriteUInt16BigEndian(buffer, Id);
+        ushort temp = (ushort)(((OpCode & 0xF) << 3 |
+                                (IsAuthoritative ? 1 : 0) << 2 |
+                                (IsTruncated ? 1 : 0) << 1 | (IsRecursionDesired ? 1 : 0)) << 8);
+        ushort temp2 = (ushort)((IsRecursionAvailable ? 1 : 0) << 7 | (ResponseCode & 0xF));
+        BinaryPrimitives.WriteUInt16BigEndian(buffer[2..], (ushort)(temp | temp2));
+        BinaryPrimitives.WriteUInt16BigEndian(buffer[4..], 1);
+        BinaryPrimitives.WriteUInt16BigEndian(buffer[6..], 0);
+        BinaryPrimitives.WriteUInt16BigEndian(buffer[8..], NameServerCount);
+        BinaryPrimitives.WriteUInt16BigEndian(buffer[10..], AdditionalCount);
         return buffer;
     }
 }
