@@ -23,6 +23,7 @@ public class DnsMessage
         var offset = 12;
         for (var i = 0; i < Header.QuestionCount; i++)
         {
+            Console.WriteLine($"Question no.{i}");
             var (len, question) = DnsParser.ParserDnsQuestion(data.AsSpan()[offset..], data);
             offset += len;
             AddDnsQuestion(question);
