@@ -52,9 +52,9 @@ public class DnsMessage
                 }
                 Console.WriteLine("\n*******************************");
                 var (questionLength, resolverQuestion) = DnsParser.ParserDnsQuestion(resolverResult[12..], resolverResult);
-                Console.WriteLine(JsonSerializer.Serialize(resolverQuestion));
+                Console.WriteLine(JsonSerializer.Serialize("Resolver Question: "+resolverQuestion));
                 var (_, resolverResourceRecords) = DnsParser.ParserDnsResourceRecord(resolverResult[(questionLength + 12)..], resolverResult);
-                Console.WriteLine(JsonSerializer.Serialize(resolverResourceRecords));
+                Console.WriteLine(JsonSerializer.Serialize("Resolver ResourceRecord" + resolverResourceRecords));
                 AddDnsResourceRecord(resolverResourceRecords);
             }
             else
