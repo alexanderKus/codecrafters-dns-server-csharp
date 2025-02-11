@@ -27,6 +27,7 @@ public class DnsMessage
             var (len, question) = DnsParser.ParserDnsQuestion(data.AsSpan()[offset..], data);
             offset += len;
             AddDnsQuestion(question);
+            continue;
             if (_resolverUdpEndPoint is not null)
             {
                 Span<byte> buffer = new byte[1024];
