@@ -52,6 +52,7 @@ public class DnsMessage
                     Console.Write($"0x{b:X2},");
                 }
                 Console.WriteLine("\n*******************************");
+                if (resolverResult.Length <= 12) continue;
                 var (questionLength, resolverQuestion) = DnsParser.ParserDnsQuestion(resolverResult[12..], resolverResult);
                 Console.WriteLine("Resolver Question: "+ JsonSerializer.Serialize(resolverQuestion));
                 var (_, resolverResourceRecords) = DnsParser.ParserDnsResourceRecord(resolverResult[(questionLength + 12)..], resolverResult);
