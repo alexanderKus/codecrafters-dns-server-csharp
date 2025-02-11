@@ -37,7 +37,7 @@ public class DnsMessage
                 Console.WriteLine("Sent to resolver:");
                 foreach (byte b in buffer[..length])
                 {
-                    Console.Write($"{b:X2},");
+                    Console.Write($"0x{b:X2},");
                 }
                 Console.WriteLine("\n*******************************");
                 _resolverUdpClient.Send(buffer[..length].ToArray(), length, _resolverUdpEndPoint);
@@ -48,7 +48,7 @@ public class DnsMessage
                 Console.WriteLine("Recived to resolver:");
                 foreach (byte b in resolverResult)
                 {
-                    Console.Write($"{b:X2},");
+                    Console.Write($"0x{b:X2},");
                 }
                 Console.WriteLine("\n*******************************");
                 var (questionLength, _) = DnsParser.ParserDnsQuestion(resolverResult[12..], resolverResult);
