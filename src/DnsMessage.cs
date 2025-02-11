@@ -34,29 +34,13 @@ public class DnsMessage
                 headerCopy.CopyTo(buffer);
                 var length = question.Write(buffer[12..]);
                 length += 12;
-                Console.WriteLine("*******************************");
-                Console.WriteLine("Sent to resolver:");
-                foreach (byte b in buffer[..length])
-                {
-                    Console.Write($"0x{b:X2},");
-                }
-                Console.WriteLine("\n*******************************");
                 _resolverUdpClient.Send(buffer[..length].ToArray(), length, _resolverUdpEndPoint);
                 Console.WriteLine("Waiting for response...");
                 var resolverResponseEndPoint = new IPEndPoint(IPAddress.Any, 0);
                 var resolverResult = _resolverUdpClient.Receive(ref resolverResponseEndPoint).AsSpan();
-                Console.WriteLine("*******************************");
-                Console.WriteLine("Recived to resolver:");
-                foreach (byte b in resolverResult)
-                {
-                    Console.Write($"0x{b:X2},");
-                }
-                Console.WriteLine("\n*******************************");
                 if (resolverResult.Length <= 12) continue;
-                var (questionLength, resolverQuestion) = DnsParser.ParserDnsQuestion(resolverResult[12..], resolverResult);
-                Console.WriteLine("Resolver Question: "+ JsonSerializer.Serialize(resolverQuestion));
+                var (questionLength, _) = DnsParser.ParserDnsQuestion(resolverResult[12..], resolverResult);
                 var (_, resolverResourceRecords) = DnsParser.ParserDnsResourceRecord(resolverResult[(questionLength + 12)..], resolverResult);
-                Console.WriteLine("Resolver ResourceRecord" + JsonSerializer.Serialize(resolverResourceRecords));
                 AddDnsResourceRecord(resolverResourceRecords);
             }
             else
