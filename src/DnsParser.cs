@@ -30,6 +30,7 @@ internal static class DnsParser
 
     private static (int length, DnsDomain domain) ParseDnsDomain(Span<byte> data, Span<byte> buffer)
     {
+        Console.WriteLine($"{data.Length}, {buffer.Length}");
         List<string> labels = [];
         var index = 0;
         while (data[index] != 0) 
